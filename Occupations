@@ -1,0 +1,15 @@
+With
+    sub1 as
+        (Select row_number() over(order by Name) as n, Name from Occupations where Occupation = "Doctor" order by Name),
+    sub2 as
+        (Select row_number() over(order by Name) as n, Name from Occupations where Occupation = "Professor" order by Name),
+    sub3 as
+        (Select row_number() over(order by Name) as n, Name from Occupations where Occupation = "Singer" order by Name),
+    sub4 as
+        (Select row_number() over(order by Name) as n, Name from Occupations where Occupation = "Actor" order by Name)
+    
+    Select sub1.Name, sub2.Name, sub3.Name, sub4.Name
+        from (((sub2
+        left outer join sub1 on sub1.n = sub2.n)
+        left outer join sub3 on sub2.n = sub3.n)
+        left outer join sub4 on sub2.n = sub4.n);
