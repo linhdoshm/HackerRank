@@ -1,0 +1,7 @@
+Select Concat(Name, "(", left(Occupation,1), ")")
+    from Occupations
+    Order by Name;
+Select Concat("There are a total of ", count(Occupation), " ", lower(Occupation), "s.") as t
+    from Occupations
+    group by Occupation
+    order by t;
