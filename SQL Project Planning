@@ -1,0 +1,15 @@
+With sub1 as
+    (Select row_number() over(order by t1.Start_date) as n, t1.Start_date as Start_Date
+        from Projects as t1
+        left join Projects as t2 on t1.Start_date = t2.End_date
+        where t2.start_Date is null),
+    sub2 as
+    (Select row_number() over(order by t1.Start_date) as n, t1.End_date as End_date
+        from Projects as t1
+        left join Projects as t2 on t1.End_date = t2.Start_date
+        where t2.end_Date is null)
+
+Select sub1.start_date, sub2.end_date
+    from sub1, sub2
+    where sub1.n = sub2.n
+    order by datediff(day, sub2.end_date, sub1.start_date) desc, sub1.start_date;
