@@ -1,0 +1,7 @@
+Select a.Name
+    from Students a, Friends b, Packages c, Packages d
+      where a.ID = b.ID
+      and b.ID = c.ID
+      and b.Friend_ID = d.ID
+      and d.Salary > c.Salary
+    order by d.Salary;
