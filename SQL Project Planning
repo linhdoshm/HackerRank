@@ -1,3 +1,4 @@
+-- First attemp
 With sub1 as
     (Select row_number() over(order by t1.Start_date) as n, t1.Start_date as Start_Date
         from Projects as t1
@@ -13,3 +14,13 @@ Select sub1.start_date, sub2.end_date
     from sub1, sub2
     where sub1.n = sub2.n
     order by datediff(day, sub2.end_date, sub1.start_date) desc, sub1.start_date;
+
+-- https://viblo.asia/p/giai-bai-sql-tren-hackerrank-ky-thuat-tabibitosan-oOVlYvpB58W
+With a as
+(Select Task_ID, Start_Date, (Start_Date - row_number() over(order by Start_Date)) as r
+    from Projects)
+    
+    Select min(Start_Date) as a1, ADDDATE(max(Start_date), 1) as a2
+        from a
+        group by r
+        order by datediff(min(Start_Date), max(Start_date)) DESC, min(Start_Date)  
