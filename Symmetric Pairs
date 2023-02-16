@@ -1,0 +1,6 @@
+SELECT F1.X, F1.Y
+    FROM Functions F1, Functions F2
+    where F1.X = F2.Y AND F1.Y = F2.X
+    Group by F1.X, F1.Y
+    having (F1.X < F1.Y) or (F1.X = F1.Y and count(concat(F1.X, '-', F1.Y))>1)
+ORDER BY F1.X ASC;
