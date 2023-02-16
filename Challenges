@@ -1,0 +1,15 @@
+-- First attemp
+With a as
+(Select hacker_id, count(challenge_id) cnt
+    from Challenges
+    group by hacker_id)
+    
+    Select a.hacker_id, Hackers.name, a.cnt
+        from a, Hackers
+        where a.hacker_id = Hackers.hacker_id
+        and cnt in
+            (Select cnt
+                from a
+                group by cnt
+                having count(cnt) = 1 or cnt = (Select max(cnt) from a))
+        order by a.cnt desc, a.hacker_id
