@@ -1,0 +1,9 @@
+Select a.hacker_id, Hackers.name, sum(a.mx) as sm
+        from Hackers,
+            (Select hacker_id, challenge_id, max(score) mx
+                from Submissions
+                group by hacker_id, challenge_id) a
+        where a.Hacker_id = Hackers.hacker_id
+        group by a.hacker_id, Hackers.name
+        having sm > 0
+        order by sm desc, hacker_id; 
