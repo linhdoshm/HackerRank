@@ -1,0 +1,4 @@
+Select if(b.Grade < 8, Null, a. Name), b.Grade, a.Marks
+    from Grades b, Students a
+    where a.Marks >= b.min_Mark and a.Marks <= b.max_Mark
+    order by  b.Grade DESC, a.Name, a.Marks
