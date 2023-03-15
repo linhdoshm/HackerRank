@@ -1,0 +1,9 @@
+Select d.hacker_id, a.name
+    from submissions d, challenges c, difficulty b, hackers a
+    where d.challenge_id = c.challenge_id
+    and c.difficulty_level = b.difficulty_level
+    and d.score = b.score
+    and d.hacker_id = a.hacker_id
+    group by d.hacker_id, a.name
+    having count(*) > 1
+    order by count(*) DESC, d.hacker_id;
