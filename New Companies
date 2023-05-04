@@ -1,0 +1,16 @@
+With a as
+(Select company_code
+    , count(distinct lead_manager_code) Lead_manager
+    , count(distinct senior_manager_code) senior_manager
+    , count(distinct manager_code) manager
+    , count(distinct employee_code) employee
+From Employee
+Group by Company_code
+)
+
+Select a.company_code, C.founder, a.lead_manager, a.senior_manager, a.manager, a.employee
+from a
+Left join Company C
+ON C.company_code = a.company_code
+Order by Company_code
+;
