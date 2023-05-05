@@ -1,3 +1,4 @@
+-- Attemp 1
 With s as
     (Select
         submission_date
@@ -29,6 +30,62 @@ s2 as
         group by submission_date, hacker_id) a
     where subrank = 1
     )
+    
+    
+    -- Attemp 2
+    
+    SELECT sd, cnt, h.hacker_id, h.name
+FROM(
+
+SELECT sd, (SELECT COUNT(DISTINCT h.hacker_id) FROM hackers h JOIN submissions s ON s.hacker_id = h.hacker_id WHERE s.submission_date <= sd AND
+            (SELECT COUNT(DISTINCT submission_date) FROM hackers hh JOIN submissions ss ON ss.hacker_id = hh.hacker_id WHERE hh.hacker_id = h.hacker_id
+            AND ss.submission_date <= sd
+            )
+            = 1+DATEDIFF(sd,'2016-03-01')) AS cnt,
+(SELECT h.hacker_id FROM hackers h JOIN submissions s ON s.hacker_id = h.hacker_id WHERE s.submission_date = sd GROUP BY h.hacker_id ORDER BY COUNT(s.submission_id) DESC, h.hacker_id LIMIT 1) AS hacker_id,
+    (SELECT COUNT(s.submission_id) FROM hackers h JOIN submissions s ON s.hacker_id = h.hacker_id WHERE s.submission_date = sd GROUP BY h.hacker_id ORDER BY COUNT(s.submission_id) DESC, h.hacker_id LIMIT 1) AS hacker_cnt
+
+FROM
+    (SELECT submission_date sd
+     FROM submissions
+     GROUP BY submission_date
+    ) AS date_tbl
+
+) AS TBL2
+JOIN hackers h ON h.hacker_id = TBL2.hacker_id
+ORDER BY sd;
+
+-- Attemp 3
+
+With
+B as
+(Select A.submission_date as dt, count(A.hacker_id) as cnt
+from
+    (Select submission_date as submission_date, hacker_id as hacker_id, (rank() over(PARTITION BY hacker_id order by submission_date)) as Rank, day(submission_date) as Day
+        from Submissions
+        group by submission_date, hacker_id) as A
+Where A.Rank = A.Day
+group by A.submission_date),
+X as
+(Select submission_date, hacker_id, count(submission_id) as cnt
+        from Submissions
+        group by submission_date, hacker_id),
+C as
+(Select submission_date, min(hacker_id) as id
+    from X
+    where concat(submission_date, " ", cnt)
+        in
+        (Select concat(submission_date, " ", max(cnt))
+         from X
+         group by submission_date)
+    group by submission_date)
+        
+        Select B.dt, B.cnt, C.id, Hackers.name
+            from B, C, Hackers
+            where B.dt = C.submission_date
+            and C.id = Hackers.hacker_id
+            order by B.dt
+;
     
 Select 
     s1.*
