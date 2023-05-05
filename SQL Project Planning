@@ -24,3 +24,32 @@ With a as
         from a
         group by r
         order by datediff(min(Start_Date), max(Start_date)) DESC, min(Start_Date)  
+
+-- 3th attemp
+With a as
+    (Select *
+        , lag(Start_Date) over(order by Start_Date) Previous
+        , lead(End_Date) over(order by End_Date) After
+    from Projects),
+
+Startdate as
+    (Select
+        row_number() over(order by Start_date) r
+        , Start_date
+    from a
+    where datediff(day, Previous, Start_date) <> 1
+    or Previous is null),
+
+Enddate as
+    (Select
+        row_number() over(order by End_date) r
+        , End_date
+    from a
+    where datediff(day, End_date, After) <> 1
+    or After is null)
+    
+Select Startdate.Start_date, Enddate.End_date
+from Startdate
+Join Enddate
+On Startdate.r = Enddate.r
+Order by datediff(day, Startdate.Start_date, Enddate.End_date), Startdate.Start_date;
