@@ -1,1 +1,42 @@
-
+With s as
+    (Select
+        submission_date
+        , hacker_id
+        , dense_rank() over(partition by hacker_id order by submission_date) daterank
+    From Submissions
+    ),
+-- Request s1
+s1 as
+    (Select
+        submission_date
+        , count(distinct hacker_id) noofhackers
+    from s
+    where daterank = day(submission_date)
+    group by submission_date
+    ),
+-- Request s2
+s2 as
+    (Select *
+    from
+        (Select
+            submission_date
+            , hacker_id
+            , count(*) noofsub
+            , row_number() over
+                (partition by submission_date 
+                 order by count(*) DESC, hacker_id) subrank
+        from s
+        group by submission_date, hacker_id) a
+    where subrank = 1
+    )
+    
+Select 
+    s1.*
+    , s2.hacker_id
+    , Hackers.name
+from s1
+left join s2
+on s1.submission_date = s2.submission_date
+left join Hackers
+on s2.hacker_id = Hackers.hacker_id
+;
